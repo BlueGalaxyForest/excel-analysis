@@ -30,7 +30,39 @@
 	* 是否要引入ElementUI plus?(OK)
 		1. 采取局部引入风格=>全局安装ElementUIPlus(OK)
 		2. 引入全局样式吧(OK)
-		mark: Vue3的setup语法弹与组件的问题
+		mark: Vue3的setup语法弹与组件的问题=>可以直接引入(OK)
 	
 	
 	
+
+# 先用Vue3画一个左右布局吧
+## 大纲
+* App.vue采取left-side的左右布局
+* 具体的逻辑还是放到具体的组件
+* 左边固定放置selector组件去选择
+* 右边是承载器,用于展示上传器或者数据分析面板
+
+### 
+1. 先做一个排他的selector选择器(OK)
+	* Vue3的setup语法糖,App.vue引入另一个自定义组件(OK)
+	* 需要渐变背景颜色(OK)
+	* 默认是选中第一个分析项目
+	
+2. 需要做一个right的uploader(OK)
+	* 先来个uploader组件
+	* 还有Panel组件,Panel的话也需要拆分成的 ExcelPanel,XlsPanel => 就算以后两者有共同的东西,我也可以把两者共同的抽离出来
+	* 是否需要Router-view?
+	
+	1. 创建一个Uploader组件(OK)
+	2. 创建一个 ExcelPanel.vue 和 XlsPanel.vue(OK)
+	3. app.vue需要左右布局(OK)
+	4. uploader的上传的具体使用elementUI PLus(OK)
+		* Button怎么引入组件的(OK)
+		
+	5. 我需要先绑定文件的钩子-->成功与失败
+		* 需要验证格式是否为指定的 Excel格式
+		* 上传失败需要给个提示(OK)
+		
+3. 上传成功的接口如何设计呢?
+	* 创建一个SpringBoot项目(OK)
+		

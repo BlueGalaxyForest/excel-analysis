@@ -1,30 +1,25 @@
 <script setup lang="ts">
-import { ElButton } from 'element-plus'
- 
-
+import { ElButton } from "element-plus";
+import Selector from "./views/selector/Selector.vue"; // 请确保路径正确
 </script>
 
 <template>
-  <div class="app">
+  <div class="app flex">
     <div class="left-side">
-      哈哈
+      <Selector></Selector>
     </div>
     <div class="right-side">
-      <el-button>Click me</el-button>
-
+      <router-view></router-view>
     </div>
   </div>
 </template>
 
 <style scoped lang="scss">
-  .app {
-    .left-side{
-      color:red
-    }
-  
+.app {
+  border: 1px solid red;
+  .right-side{
+    border: 1px solid red;
+    width: 500px;
   }
-
-    
-  
-
+}
 </style>
