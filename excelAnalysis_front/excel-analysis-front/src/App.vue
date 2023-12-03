@@ -18,8 +18,10 @@ import Selector from "./views/selector/Selector.vue"; // 请确保路径正确
 .app {
   border: 1px solid red;
   .right-side{
-    border: 1px solid red;
+    border: 1px solid blue;
     width: 500px;
+    display: flex;
+    justify-content: center;
   }
 }
 </style>

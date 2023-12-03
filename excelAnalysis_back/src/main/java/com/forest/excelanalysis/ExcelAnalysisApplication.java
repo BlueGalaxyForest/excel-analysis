@@ -7,7 +7,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class ExcelAnalysisApplication {
 
     public static void main(String[] args) {
-        System.out.println("WTF??");
         SpringApplication.run(ExcelAnalysisApplication.class, args);
     }
 

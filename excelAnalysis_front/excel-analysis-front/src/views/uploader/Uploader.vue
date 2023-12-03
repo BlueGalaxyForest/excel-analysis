@@ -3,8 +3,8 @@
     <el-upload
       class="upload-demo"
       drag
-      action="https://run.mocky.io/v3/9d059bf9-4660-45f2-925d-ce80ad6c4d15"
-      multiple
+      :action="uploadUrl"
+      :multiple="false"
       :before-upload="beforeUpload"
     >
       <el-icon class="el-icon--upload"><upload-filled /></el-icon>
@@ -19,7 +19,11 @@ import { ElUpload, ElIcon } from "element-plus";
 import { UploadFilled } from "@element-plus/icons-vue";
 import { ElMessage } from "element-plus";
 
+const uploadUrl = "http://localhost:9000/api/upload";
+
 const beforeUpload = (file: File) => {
+  console.log("文件上传之前-->", uploadUrl);
+
   // 获取文件扩展名
   const extension = file.name.split(".").pop()?.toLowerCase();
 

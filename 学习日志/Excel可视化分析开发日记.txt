@@ -1,0 +1,301 @@
+
+# 项目需求
+## 大纲
+* 主要是给一个前端页面,然后上传本地的Excel文件夹,然后默认生成一个可视化的结果,也可以经过配置按需生成可视化结果
+* 先装备一个模板数据(OK)
+	1. 就业指导课的Excel存到本地
+
+# 技术选型
+## 大纲:
+* 前端:
+	Vue3+TS
+* 后端Java
+
+# 项目装备
+## 大纲
+* 先创建一个Vue3程序(OK)
+	1. 看看vite(OK)
+	2. 删掉没用的代码(OK)
+	
+* Vue的相关配置:
+	* 应该是分left和right两部分(OK)
+	* 准备一个全局的sass文件(OK)
+		-> 脚手架的Vue3如何引入sass(OK)
+		-> sass与伪类选择器搭配不糊产生嵌套选择器 
+		=> 在Sass中，使用&符号与伪类结合时，不会产生嵌套选择器。相反，&用于引用父选择器，而不是创建嵌套选择器。当你使用&与伪类一起使用时，它会帮助你生成带有父选择器的复合选择器，而不是创建嵌套结构。
+	* 创建一个assets文件夹专门放静态资源:(OK)
+		https://gitee.com/littledokey/poetize-im-vue3/tree/master/src/assets gitee开源规范
+		=> 参考小程序
+		
+	* 是否要引入ElementUI plus?(OK)
+		1. 采取局部引入风格=>全局安装ElementUIPlus(OK)
+		2. 引入全局样式吧(OK)
+		mark: Vue3的setup语法弹与组件的问题=>可以直接引入(OK)
+	
+	
+	
+
+# 先用Vue3画一个左右布局吧(OK)
+## 大纲
+* App.vue采取left-side的左右布局
+* 具体的逻辑还是放到具体的组件
+* 左边固定放置selector组件去选择
+* 右边是承载器,用于展示上传器或者数据分析面板
+
+### 
+1. 先做一个排他的selector选择器(OK)
+	* Vue3的setup语法糖,App.vue引入另一个自定义组件(OK)
+	* 需要渐变背景颜色(OK)
+	* 默认是选中第一个分析项目
+	
+2. 需要做一个right的uploader(OK)
+	* 先来个uploader组件
+	* 还有Panel组件,Panel的话也需要拆分成的 ExcelPanel,XlsPanel => 就算以后两者有共同的东西,我也可以把两者共同的抽离出来
+	* 是否需要Router-view?
+	
+	1. 创建一个Uploader组件(OK)
+	2. 创建一个 ExcelPanel.vue 和 XlsPanel.vue(OK)
+	3. app.vue需要左右布局(OK)
+	4. uploader的上传的具体使用elementUI PLus(OK)
+		* Button怎么引入组件的(OK)
+		
+	5. 我需要先绑定文件的钩子-->成功与失败
+		* 需要验证格式是否为指定的 Excel格式
+		* 上传失败需要给个提示(OK)
+		
+3. 上传成功的接口如何设计呢?
+	* 创建一个SpringBoot项目(OK)
+	* 先跑一个SpringBoot接口
+		* log日志输出需要导入什么包? => 无序导入,Springboot默认集成
+		* 重新安装postman,新建接口测试(OK)
+		
+		
+# 先把上传功能做一下:(OK)
+## 大纲
+* 当前的接口是: localhost:9000/api/upload
+* 然后内部选择文件传给后端(OK)
+* Springboot后端需要分析上传的文件
+	* 因为前端上传的文件类型可能是xlsx,xls,.csv,.txt
+	* 其中xlsx和xls文件当做Excel单独处理,csv当前处理,.txt单独处理
+	* 可能controller接收到数据之后,需要读取文件的后缀,例如是.xlsx 或者 .xls后缀则需要XlsxService去处理,具体是 XlsxServiceImpl 去处理,满足springmvc三层架构
+	* XlsxServiceImpl可能需要引入 easyExcel 依赖,然后把对应的Excel文件抽象成一个对象数组,然后toString遍历循环输出每个对象
+	
+	
+### 实现
+1. SpringBoot处理接收到的文件
+	* SpringBoot如何获取接收到的文件后缀?(OK)
+		* String fileExtension = getFileExtension(file.getOriginalFilename()); => 可以写个utils工具类并且配置成SpringBoot的bean(配置bean不必要)
+		* 研究下EasyExcel读Excel文件=> 需要创建学习文档去学习了 
+			* 需要他的源码下载下来研究下=> 源码例子不直观,不能直接运行
+			* Java如何读取本地的xlsx文件?
+			* 跑一个简单的EasyExcel项目吧
+				1. 最简单的读的excel示例 => 准备一个测试Excel文件(OK)
+				2. 最简单的读的对象 => (OK)
+				3. 最简单的读的监听器
+					* ReadListener 是导入哪个包? => import com.alibaba.excel.read.listener.ReadListener;
+					* 是否 fasterJSON 依赖? 
+						        <dependency>
+									<groupId>com.alibaba.fastjson2</groupId>
+									<artifactId>fastjson2</artifactId>
+									<version>2.0.29</version>
+								</dependency>
+				4. 持久层也有了
+				5. 运行代码 
+					*  String fileName = TestFileUtil.getPath() + "demo" + File.separator + "demo.xlsx"; 如何理解
+					* 路径是这个: path-->/G:/%e8%bd%af%e4%bb%b6%e9%a1%b9%e7%9b%ae%e5%8c%ba/Excel%e5%8f%af%e8%a7%86%e5%8c%96%e5%88%86%e6%9e%90/excelAnalysis_back/target/test-classes/
+						VS G:\软件项目区\Excel可视化分析\excelAnalysis_back\target\test-classes\com\forest\excelanalysis\datas
+						-> springboot的test并不会把.xlsx结尾的文件输出到target 
+						-> 可以用绝对路径去替换(OK)
+
+					* easyExcel示例总结:
+						1. 你读取Excel文件的时候,你必须要建立对应的实体类;但是有这么一个需求:用户直接从本地上传一个Excel,你并不知道用户上传的Excel文件有哪些字段
+						2. 如果我任意从本地上传一个Excel文件给后端,easyExcel能不能自己动态生成一个类,然后以对象的形式动态去输出Excel每一行数据
+						
+	* easyExcel能不能拿到第一行的标题?	=> 直接在AnalysisEventListener这个类里面覆盖就行了(ok)
+	        String filePath = "G:\\软件项目区\\Excel可视化分析\\excelAnalysis_back\\src\\test\\java\\com\\forest\\excelanalysis\\datas\\demoData.xlsx";
+			  /**
+				 * 这里会一行行的返回头
+				 *
+				 * @param headMap
+				 * @param context
+				 */
+				@Override
+				public void invokeHead(Map<Integer, ReadCellData<?>> headMap, AnalysisContext context) {
+					log.info("解析到一条头数据:{}", JSON.toJSONString(headMap));
+					// 如果想转成成 Map<Integer,String>
+					// 方案1： 不要implements ReadListener 而是 extends AnalysisEventListener
+					// 方案2： 调用 ConverterUtils.convertToStringMap(headMap, context) 自动会转换
+				}
+		
+	
+	* 关于EasyExcel不能动态生成类的问题--Map方案:
+		* Map方案读取到的数据是这样的:
+			Read data: {0=字符串0, 1=2023-1-1 1:01, 2=1} => key是0 1 2在循环;可以通过map.get来获取对应的数据,例如map.get(0)... map.get(1);但是map.get(3)由于越界了,得到的结果是null
+			Read data: {0=字符串1, 1=2023-1-2 1:01, 2=2}
+			Read data: {0=字符串2, 1=2023-1-3 1:01, 2=3}
+			Read data: {0=字符串3, 1=2023-1-4 1:01, 2=4}
+		
+		* 而建立了实体类的读取是这样的(经过JSON.toJSONString解析的)
+			读取到一条数据{}{"date":"2023-01-01 01:01:00","doubleData":1.0,"string":"字符串0"}
+			读取到一条数据{}{"date":"2023-01-02 01:01:00","doubleData":2.0,"string":"字符串1"}
+			读取到一条数据{}{"date":"2023-01-03 01:01:00","doubleData":3.0,"string":"字符串2"}
+			读取到一条数据{}{"date":"2023-01-04 01:01:00","doubleData":4.0,"string":"字符串3"}	
+			
+		* 不经过JSON解析的:
+			读取到一条数据{}DemoData(string=字符串0, date=Sun Jan 01 01:01:00 GMT+08:00 2023, doubleData=1.0)
+			读取到一条数据{}DemoData(string=字符串1, date=Mon Jan 02 01:01:00 GMT+08:00 2023, doubleData=2.0)
+			读取到一条数据{}DemoData(string=字符串2, date=Tue Jan 03 01:01:00 GMT+08:00 2023, doubleData=3.0)
+			读取到一条数据{}DemoData(string=字符串3, date=Wed Jan 04 01:01:00 GMT+08:00 2023, doubleData=4.0)
+		
+		* 实体类是这样的:
+			public class DemoData {
+				private String string;
+				private Date date;
+				private Double doubleData;
+			}
+			
+			
+2. Excel分析的思路分析:
+	* 现在可以拿到Excel的表头和表体,但是是通过Map对象动态获得的,Map<Integer,String>
+	* 我可以单独得到Excel每一列的数据,columns1=["字符串标题","字符串0","字符串1","字符串2"]
+	* 可以去分析每一个列的数组,看看每一个列的数组有没有规律性,重点是重复性,无论是纯文本还是纯数组,找重复的规律,以便分组
+	
+3. 网络读取Excel:(OK)
+	* excel的read可以读取(MultipartFile file)类型参数吗?
+		   public static ExcelReaderBuilder read(InputStream inputStream, Class head, ReadListener readListener) {}
+	* 网络读代码:
+		 public static void readExcel(MultipartFile file) {
+				try (InputStream inputStream = file.getInputStream()) {
+					EasyExcel.read(inputStream, YourDataClass.class, new YourDataListener()).sheet().doRead();
+				} catch (IOException e) {
+					e.printStackTrace();
+					// 处理异常
+				}
+			}	
+		   
+	* 需要一个 ExcelDataListener 类
+	* // 有个很重要的点 DemoDataListener 不能被spring管理，要每次读取excel都要new,然后里面用到spring可以构造方法传进去
+		1. 读到的表头没有中文的问题
+		invokeHead->{0=com.alibaba.excel.metadata.data.ReadCellData@141ba4b, 1=com.alibaba.excel.metadata.data.ReadCellData@b0ceb15e, 2=com.alibaba.excel.metadata.data.ReadCellData@ea2a16b, 3=com.alibaba.excel.metadata.data.ReadCellData@1e5820e0, 4=com.alibaba.excel.metadata.data.ReadCellData@68fe6e04, 5=com.alibaba.excel.metadata.data.ReadCellData@6dbf9b98, 6=com.alibaba.excel.metadata.data.ReadCellData@ba88512b, 7=com.alibaba.excel.metadata.data.ReadCellData@10e79dc1}
+		
+		2. 可以使用JSON去格式化Map<Integer, ReadCellData<?>> headMap,但是获取的StringValue的方式却非常刁钻:
+		headMap.get(0).getStringValue()//只能获取到一个值:那就是"headMap.get(0).getStringValue()"
+		
+		3. JSON格式的结果:
+		/*
+			{
+		0: {
+			"columnIndex": 0,
+			"dataFormatData": {
+				"format": "General",
+				"index": 0
+			},
+			"rowIndex": 0,
+			"stringValue": "序号",
+			"type": "STRING"
+		},
+		1: {
+			"columnIndex": 1,
+			"dataFormatData": {
+				"format": "General",
+				"index": 0
+			},
+			"rowIndex": 0,
+			"stringValue": "姓名",
+			"type": "STRING"
+		},
+		2: {
+			"columnIndex": 2,
+			"dataFormatData": {
+				"format": "General",
+				"index": 0
+			},
+			"rowIndex": 0,
+			"stringValue": "学号·",
+			"type": "STRING"
+		},
+		3: {
+			"columnIndex": 3,
+			"dataFormatData": {
+				"format": "General",
+				"index": 0
+			},
+			"rowIndex": 0,
+			"stringValue": "班级",
+			"type": "STRING"
+		},
+		4: {
+			"columnIndex": 4,
+			"dataFormatData": {
+				"format": "General",
+				"index": 0
+			},
+			"rowIndex": 0,
+			"stringValue": "理论成绩*50%",
+			"type": "STRING"
+		},
+		5: {
+			"columnIndex": 5,
+			"dataFormatData": {
+				"format": "General",
+				"index": 0
+			},
+			"rowIndex": 0,
+			"stringValue": "实践成绩*50%",
+			"type": "STRING"
+		},
+		6: {
+			"columnIndex": 6,
+			"dataFormatData": {
+				"format": "General",
+				"index": 0
+			},
+			"rowIndex": 0,
+			"stringValue": "总评成绩",
+			"type": "STRING"
+		},
+		7: {
+			"columnIndex": 7,
+			"dataFormatData": {
+				"format": "General",
+				"index": 0
+			},
+			"rowIndex": 0,
+			"stringValue": "加分原因",
+			"type": "STRING"
+		}
+	}
+		*/
+		4. 现在就是如何取出所有的stringValue然后放到一个数组里面?,最后结果应该是result=["序号","姓名","学号","班级","理论成绩*50%"....]
+		
+		
+# 后台拿到前端上传的数据后,怎么做处理?
+## 大纲
+* 看Map如何遍历:
+* 能不能把每一列单独放在一个ArrayList里面,如果有5列,就有5个ArrayList,如果有7列就有七个ArrayList:
+
+	public void invoke(Map<Integer, String> map, AnalysisContext analysisContext) {
+        System.out.println("invoke->"+map);
+        for(Map.Entry<Integer,String> entry:map.entrySet()){
+            Integer key = entry.getKey();
+            String value = entry.getValue();
+            System.out.println("key-value " + key+":"+value);
+
+
+        }
+        System.out.println("----");
+    }
+	例如:
+		字符串标题   日期标题      数字标题
+		字符串0        2023/11/1     100
+		字符串2        2023/11/2     200
+		字符串3        2023/11/3     300
+		
+	结果是:
+		ArrayList1 = ["字符串0","字符串2","字符串3"]
+	    ArrayList2 = ["2023/11/1","2023/11/2","2023/11/3"]
+	    ArrayList3 = ["100","200","200"]
+		
+		=> 然后这些ArrayList都放到一个Map里面
+		
+	* 把resultMap返回给前端看看 => 可以得到,但是Map无序 	
