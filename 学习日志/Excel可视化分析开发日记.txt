@@ -298,4 +298,48 @@
 		
 		=> 然后这些ArrayList都放到一个Map里面
 		
-	* 把resultMap返回给前端看看 => 可以得到,但是Map无序 	
+	* 把resultMap返回给前端看看 => 可以得到,但是Map无序 
+
+
+# 先看看Echarts是怎么呈现数据的,再决定后端如何处理数据
+## 大纲
+* 人家的vue3+TS项目有typings文件夹吗?=>https://gitee.com/thinkgem/jeesite-vue?_from=gitee_search 
+* Echarts 有没有TS版本 => 没有好的示例
+* Vue3如何安装Echarts使用?
+	* Vue3点击按钮,路由到不同的组件显示=>(OK)
+		* Vue3怎么使用<script setup>的Vue Router?
+			1. 配置路径:
+			const routes = [
+				  {
+					path:'/home',
+					name:Home,
+					component:Home
+				  },
+				  {
+					path:'/about',
+					component:About
+				  },
+				  {
+					path:'/list',
+					component:List
+				  },
+				  {
+					path:'/detail',
+					component:Detail
+				  },
+				  {
+					path:'/',
+					redirect:'/home'
+				  }
+				]
+				=> const options: string[] = ["Excel分析", "测试"]; 改成对象风格
+				 
+		* 看Echarts的数据风格:
+			      {
+					name: 'Series 1',
+					type: 'bar',
+					data: [25, 40, 60, 80],
+				  },
+				  
+				  
+* 单独开个分支学学Echarts				  
